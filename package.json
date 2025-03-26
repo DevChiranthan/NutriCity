@@ -1,0 +1,36 @@
+{
+  "name": "nutriCity",
+  "version": "1.0.0",
+  "description": "Urban Nutrition Platform themed around Ugadi festival",
+  "main": "index.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js",
+    "client": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [
+    "nutrition",
+    "ugadi",
+    "mern"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "framer-motion": "^12.5.0",
+    "google-auth-library": "^9.15.1",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.483.0",
+    "mongoose": "^7.8.6",
+    "multer": "^1.4.5-lts.1",
+    "recharts": "^2.15.1",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1",
+    "nodemon": "^3.0.1"
+  }
+}
