@@ -275,10 +275,10 @@ const weightData = [
 
 // Add tracking data
 const trackingData = {
-  water: { current: 1.8, target: 2.5, icon: Droplets },
-  sleep: { current: 6.5, target: 8, icon: Moon },
-  activity: { current: 45, target: 60, icon: Activity },
-  calories: { current: 1800, target: 2200, icon: Flame }
+  water: { current: 1.8, target: 2.5, icon: Droplets, label: 'Water (L)' },
+  sleep: { current: 6.5, target: 8, icon: Moon, label: 'Sleep (hrs)' },
+  activity: { current: 45, target: 60, icon: Activity, label: 'Activity (min)' },
+  calories: { current: 1800, target: 2200, icon: Flame, label: 'Calories' }
 };
 
 // Add CircleProgress component

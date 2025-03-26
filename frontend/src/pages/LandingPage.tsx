@@ -2,11 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Leaf, ChevronRight, Flower, Sun, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+interface MousePosition {
+  x: number;
+  y: number;
+}
+
 const LandingPage = () => {
   const navigate = useNavigate();
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
   const [isLogoRevealed, setIsLogoRevealed] = useState(false);
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Reveal logo after initial load
@@ -14,8 +19,8 @@ const LandingPage = () => {
       setIsLogoRevealed(true);
     }, 500);
 
-    // Mouse movement tracking
-    const handleMouseMove = (e) => {
+    // Mouse movement tracking with proper typing
+    const handleMouseMove = (e: MouseEvent) => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
         setMousePosition({
@@ -158,4 +163,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage; 
+export default LandingPage;
