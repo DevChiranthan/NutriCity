@@ -4,6 +4,12 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/AuthContext';
 import { Leaf, Users, Store, Flower, Sun, Star } from 'lucide-react';
 
+// Dynamic API base URL configuration
+const BASE_URL = 
+  import.meta.env.PROD 
+    ? 'https://nutricity.onrender.com' 
+    : 'http://localhost:5000';
+
 export default function Login() {
   const { login } = useAuth();
   const [selectedRole, setSelectedRole] = useState<'student' | 'vendor' | null>(null);
@@ -20,7 +26,8 @@ export default function Login() {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch('/api/auth/google', {
+      // Use the dynamic BASE_URL for API calls
+      const response = await fetch(`${BASE_URL}/api/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,9 +46,10 @@ export default function Login() {
           const confirmSwitch = window.confirm(
             'This email is already registered with a different role. Would you like to switch roles?'
           );
+          
           if (confirmSwitch) {
-            // Retry login with the new role
-            const retryResponse = await fetch('/api/auth/google', {
+            // Retry login with the new role and force role switch
+            const retryResponse = await fetch(`${BASE_URL}/api/auth/google`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -52,13 +60,16 @@ export default function Login() {
                 forceRoleSwitch: true,
               }),
             });
+            
             const retryData = await retryResponse.json();
+            
             if (retryResponse.ok) {
               login(retryData.token, retryData.user);
               return;
             }
           }
         }
+        
         throw new Error(data.message || 'Login failed');
       }
 
