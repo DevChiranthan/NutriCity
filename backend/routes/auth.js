@@ -7,6 +7,11 @@ const User = require('../models/User');
 // Initialize Google OAuth client with the correct client ID
 const client = new OAuth2Client('246701491552-mjd55ngujja9ivhc9j5fmu4js2tnkkg8.apps.googleusercontent.com');
 
+// Health check route to keep backend awake
+router.get('/ping', (req, res) => {
+  res.status(200).send('Backend is alive!');
+});
+
 // Google OAuth route
 router.post('/google', async (req, res) => {
   try {
@@ -75,6 +80,7 @@ router.post('/google', async (req, res) => {
   }
 });
 
+// Token verification route
 router.get('/verify', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -104,4 +110,4 @@ router.get('/verify', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
