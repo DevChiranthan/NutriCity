@@ -2,18 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <!-- Base favicon - most compatible approach -->
+    <link rel="icon" href="/favicon.ico" />
+    
+    <!-- Try with absolute path -->
+    <link rel="shortcut icon" href="/favicon.ico" />
+    
+    <!-- Try with relative path as well -->
+    <link rel="icon" href="favicon.ico" />
+    
+    <!-- Alternative formats with absolute paths -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- iOS icon -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
     <meta name="apple-mobile-web-app-title" content="NutriCity" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="manifest" href="manifest.json" />
+    <meta name="description" content="NutriCity - Your Nutrition App" />
+    <link rel="manifest" href="/manifest.json" />
     <title>NutriCity</title>
   </head>
   <body>
