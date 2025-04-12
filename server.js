@@ -57,6 +57,28 @@ io.on('connection', (socket) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 
+// Add this middleware to handle client-side routing
+app.use((req, res, next) => {
+  // Skip API routes and static files
+  if (req.url.startsWith('/api') || req.url.startsWith('/uploads')) {
+    return next();
+  }
+  
+  // Check if the request accepts HTML
+  const acceptsHTML = req.headers.accept && req.headers.accept.includes('text/html');
+  
+  // For page refreshes or direct navigation, send the index.html
+  if (acceptsHTML) {
+    // In production, serve from the frontend/dist directory
+    if (process.env.NODE_ENV === 'production') {
+      return res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+    }
+  }
+  
+  next();
+});
+
+// Development route (this should come after the middleware above)
 app.get('/', (req, res) => {
   res.send('Chat API is running');
 });
@@ -64,4 +86,4 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-}); 
+});

@@ -41,4 +41,13 @@ export default defineConfig({
       'Cross-Origin-Resource-Policy': 'cross-origin'
     }
   },
+  // Add this outside the server config
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
+    },
+  },
 })
