@@ -352,54 +352,216 @@ export default function StudentDashboard() {
     setExpandedRecipe(null);
   };
 
-  const exportToPDF = async () => {
-    try {
-      const element = document.getElementById('grocery-list');
-      if (!element) return;
-
-      const canvas = await html2canvas(element, {
-        logging: false,
-        useCORS: true,
-        allowTaint: true
+  // Modified exportToPDF function
+const exportToPDF = async () => {
+  try {
+    // Create a new jsPDF instance
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    // PDF styling variables
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 20;
+    const contentWidth = pageWidth - (margin * 2);
+    const lineHeight = 10;
+    
+    // Set fonts and colors
+    pdf.setFont("helvetica", "bold");
+    pdf.setTextColor("#4CAF50"); // ugadi-green color
+    pdf.setFontSize(20);
+    
+    // Add header with decorative elements
+    pdf.text("Ugadi Festival Grocery List", margin, margin);
+    
+    // Add decorative line
+    pdf.setDrawColor("#FF9800"); // ugadi-saffron color
+    pdf.setLineWidth(0.5);
+    pdf.line(margin, margin + 5, pageWidth - margin, margin + 5);
+    
+    // Reset font for list items
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor("#333333");
+    pdf.setFontSize(12);
+    
+    // Add the grocery items
+    let y = margin + 15;
+    
+    // Add current date
+    const today = new Date().toLocaleDateString();
+    pdf.setFontSize(10);
+    pdf.setTextColor("#888888");
+    pdf.text(`Generated on: ${today}`, margin, y);
+    y += lineHeight;
+    
+    // Reset font for items
+    pdf.setFontSize(12);
+    pdf.setTextColor("#333333");
+    
+    // Group items by checked/unchecked status
+    const checkedItems = groceryList.filter(item => item.checked);
+    const uncheckedItems = groceryList.filter(item => !item.checked);
+    
+    // Add unchecked items (still needed)
+    if (uncheckedItems.length > 0) {
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor("#4CAF50");
+      pdf.text("Items to Purchase:", margin, y);
+      y += lineHeight;
+      
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#333333");
+      
+      uncheckedItems.forEach((item, index) => {
+        // Check if we need a new page
+        if (y > 270) {
+          pdf.addPage();
+          y = margin;
+        }
+        
+        // Draw checkbox
+        pdf.setDrawColor("#333333");
+        pdf.rect(margin, y - 4, 4, 4);
+        
+        // Add item text with quantity
+        pdf.text(`${item.item} - ${item.quantity}`, margin + 10, y);
+        y += lineHeight;
       });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save('ugadi-grocery-list.pdf');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
     }
-  };
-
-  const shareGroceryList = async () => {
-    try {
-      const text = groceryList
-        .map(item => `${item.item} - ${item.quantity}`)
-        .join('\n');
+    
+    // Add checked items (already purchased)
+    if (checkedItems.length > 0) {
+      y += 5; // Add some space between sections
       
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Ugadi Grocery List',
-          text: text
-        });
-      } else {
-        await navigator.clipboard.writeText(text);
-        alert('Grocery list copied to clipboard!');
+      // Check if we need a new page
+      if (y > 270) {
+        pdf.addPage();
+        y = margin;
       }
-    } catch (error) {
-      console.error('Error sharing:', error);
+      
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor("#FF9800");
+      pdf.text("Already Purchased:", margin, y);
+      y += lineHeight;
+      
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor("#888888");
+      
+      checkedItems.forEach((item, index) => {
+        // Check if we need a new page
+        if (y > 270) {
+          pdf.addPage();
+          y = margin;
+        }
+        
+        // Draw checked checkbox
+        pdf.setDrawColor("#333333");
+        pdf.rect(margin, y - 4, 4, 4);
+        pdf.setFillColor("#333333");
+        pdf.rect(margin + 1, y - 3, 2, 2, 'F');
+        
+        // Add item text with strikethrough effect (not supported directly, so we just change color)
+        pdf.text(`${item.item} - ${item.quantity}`, margin + 10, y);
+        y += lineHeight;
+      });
     }
-  };
+    
+    // Add footer
+    const footerY = pdf.internal.pageSize.getHeight() - 15;
+    pdf.setFont("helvetica", "italic");
+    pdf.setFontSize(10);
+    pdf.setTextColor("#888888");
+    pdf.text("Happy Ugadi 2025!", pageWidth / 2, footerY, { align: "center" });
+    
+    // Save the PDF
+    pdf.save('ugadi-grocery-list.pdf');
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('Failed to generate PDF. Please try again.');
+  }
+};
+
+const shareGroceryList = async () => {
+  try {
+    // Group items by checked/unchecked status
+    const checkedItems = groceryList.filter(item => item.checked);
+    const uncheckedItems = groceryList.filter(item => !item.checked);
+    
+    // Create a nicely formatted string with emojis and formatting
+    let formattedText = "🌺 *UGADI FESTIVAL GROCERY LIST* 🌺\n";
+    formattedText += "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+    
+    // Add items to purchase section
+    if (uncheckedItems.length > 0) {
+      formattedText += "🛒 *ITEMS TO PURCHASE:*\n";
+      uncheckedItems.forEach((item, index) => {
+        // Add appropriate emoji based on grocery item name
+        const emoji = getItemEmoji(item.item);
+        formattedText += `${index + 1}. ${emoji} ${item.item} - ${item.quantity}\n`;
+      });
+    }
+    
+    // Add already purchased items section
+    if (checkedItems.length > 0) {
+      formattedText += "\n✅ *ALREADY PURCHASED:*\n";
+      checkedItems.forEach((item, index) => {
+        const emoji = getItemEmoji(item.item);
+        formattedText += `${index + 1}. ${emoji} ${item.item} - ${item.quantity}\n`;
+      });
+    }
+    
+    // Add a nice footer
+    formattedText += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+    formattedText += "🎉 Happy Ugadi 2025! 🎉\n";
+    formattedText += "Shared from My Ugadi Festival App";
+    
+    // Use Web Share API if available, otherwise copy to clipboard
+    if (navigator.share) {
+      await navigator.share({
+        title: 'Ugadi Grocery List',
+        text: formattedText
+      });
+    } else {
+      await navigator.clipboard.writeText(formattedText);
+      alert('Grocery list copied to clipboard! It includes special formatting for sharing.');
+    }
+  } catch (error) {
+    console.error('Error sharing:', error);
+    alert('Failed to share grocery list. Please try again.');
+  }
+};
+
+// Helper function to get an appropriate emoji for each grocery item
+const getItemEmoji = (itemName: string): string => {
+  // Convert to lowercase for case-insensitive matching
+  const item = itemName.toLowerCase();
+  
+  // Match common grocery items with emojis
+  if (item.includes('rice')) return '🍚';
+  if (item.includes('jaggery')) return '🍯';
+  if (item.includes('flower')) return '🌸';
+  if (item.includes('mango')) return '🥭';
+  if (item.includes('tamarind')) return '🌱';
+  if (item.includes('dal')) return '🌾';
+  if (item.includes('flour')) return '🌾';
+  if (item.includes('ghee')) return '🧈';
+  if (item.includes('cardamom')) return '🌿';
+  if (item.includes('leaves')) return '🍃';
+  if (item.includes('chili') || item.includes('chilli')) return '🌶️';
+  if (item.includes('ginger')) return '🌱';
+  if (item.includes('vermicelli')) return '🍜';
+  if (item.includes('nuts')) return '🥜';
+  if (item.includes('coconut')) return '🥥';
+  if (item.includes('seed')) return '🌱';
+  if (item.includes('turmeric')) return '🟡';
+  if (item.includes('powder')) return '🧂';
+  if (item.includes('coriander')) return '🌿';
+  
+  // Default emoji for other items
+  return '🛒';
+};
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
